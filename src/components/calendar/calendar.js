@@ -1,67 +1,32 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 import styles from "./calendar.module.css";
+import moveToNextMonth from "../../store/calendar/actions/move-to-next-month";
+import moveToPreviousMonth from "../../store/calendar/actions/move-to-previous-month";
+import DaySpot from "./day-spot/day-spot";
 
-const weekDays = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-];
-const monthOfTheYear = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
+function Calendar({ onAddNewReminderEventHandler, onDaySelectedEventHandler }) {
+    const [selectedDate, setSelectedDate] = React.useState("");
+    const currentDate = useSelector((state) => state.calendar.currentDate);
+    const maxColumns = useSelector((state) => state.calendar.maxColumns);
+    const monthsOfTheYear = useSelector((state) => state.calendar.monthsOfTheYear);
+    const daysOfTheWeek = useSelector((state) => state.calendar.daysOfTheWeek);
 
-const maxColumns = 42;
-
-function Calendar() {
-    const currentDate = new Date(/*2020, 4, 1*/);
-
-    const monthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const startWeekDay = monthStartDate.getDay();
-    monthStartDate.setDate(monthStartDate.getDate() - startWeekDay);
-
-    const monthEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    const endWeekDay = monthEndDate.getDay();
-    const totalDaysToEndCurrentMonth = Math.ceil(monthEndDate.getTime() - monthStartDate.getTime()) / (24 * 60 * 60 * 1000);
-    if (totalDaysToEndCurrentMonth < maxColumns) {
-        monthEndDate.setDate(monthEndDate.getDate() + (maxColumns - totalDaysToEndCurrentMonth));
-    }
+    let { monthStartDate } = useSelector((state) => state.calendar.options);
     
+    const dispatch = useDispatch();
+    const trickDate = new Date(monthStartDate.getTime());
 
-    console.log({
-        monthStartDate,
-        currentDate,
-        monthEndDate,
-        startWeekDay,
-        endWeekDay,
-        'startWeekDay2':weekDays[startWeekDay],
-        'endWeekDay2':weekDays[endWeekDay],
-        totalDaysToEndCurrentMonth: (totalDaysToEndCurrentMonth + (maxColumns - totalDaysToEndCurrentMonth))
-    }, Math.ceil(monthEndDate.getTime() - monthStartDate.getTime()) / (24 * 60 * 60 * 1000));
-    
     return (
         <>
             <div className={styles.calendar__header}>
-                <button>Previous</button>
-                <h4>{monthOfTheYear[currentDate.getMonth()]}</h4>
-                <button>Next</button>
+                <button onClick={()=>dispatch(moveToPreviousMonth())}>Prev</button>
+                <h4>{monthsOfTheYear[currentDate.getMonth()] + ' ' + currentDate.getFullYear()}</h4>
+                <button onClick={()=>dispatch(moveToNextMonth())}>Next</button>
             </div>
             <div className={styles.calendar}>
-                {weekDays.map((day, i) => (
+                {daysOfTheWeek.map((day, i) => (
                     <div
                         className={styles.calendar__week_day}
                         key={i}
@@ -72,59 +37,21 @@ function Calendar() {
                     </div>
                 ))}
                 {Array.from({ length: maxColumns }).map((_, i) => (
-                    <Day 
+                    <DaySpot 
                         position={i} 
                         currentDate={currentDate}
-                        displayDate={i > 0 ? new Date(monthStartDate.setDate(monthStartDate.getDate() + 1)): new Date(monthStartDate.getTime())}
-                        key={i} />
+                        displayDate={i > 0 ? new Date(trickDate.setDate(trickDate.getDate() + 1)): new Date(trickDate.getTime())}
+                        key={i}
+                        onAddNewReminder={onAddNewReminderEventHandler}
+                        onSelect={(date) => {
+                            onDaySelectedEventHandler(date);
+                            setSelectedDate(date);
+                        }}
+                        selectedDate={selectedDate} />
                 ))}
             </div>
         </>
     );
 }
 
-function Day(props) {
-    const currentDate = (props.currentDate || new Date());
-
-    const classes = [
-        styles.calendar__month_day,
-        currentDate.getMonth() !== props.displayDate.getMonth() && "-no_belong_to_current_month",
-        [0, 6].includes(props.position % 7) && "-month_weekend",
-        (currentDate.getMonth() === props.displayDate.getMonth() 
-        && currentDate.getFullYear() === props.displayDate.getFullYear()  
-        && currentDate.getDate() === props.displayDate.getDate()) && "-current",
-    ].filter(c => c);
-    
-    return (
-        <div
-            className={classes.join(" ")}
-            data-belong={props.position % 7}
-            tabIndex={props.position + 1}
-            aria-label={
-                `${weekDays[props.position % 7]} ${props.displayDate.getDate()}th, 
-                ${monthOfTheYear[props.displayDate.getMonth()]} 
-                ${props.displayDate.getFullYear()}`
-            }
-        >
-            <span data-time={props.displayDate.getTime()}>{props.displayDate.getDate()}</span>
-            <span data-weather="" style={
-                {
-                    alignSelf: "center",
-                    justifySelf: "center",
-                    width: "100%",
-                    textAlign: "center",
-                    fontSize: "12px"
-                }
-            }>Cloud</span>
-            <div className={styles.controls}>
-                <ul>
-                    <li>New reminder</li>
-                    {/* <li>Del</li>
-                    <li>Edi</li> */}
-                </ul>
-            </div>
-        </div>
-    );
-}
-
-export default Calendar;
+export default React.memo(Calendar);

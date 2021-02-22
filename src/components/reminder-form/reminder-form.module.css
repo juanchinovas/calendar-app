@@ -1,0 +1,29 @@
+
+.form {
+    min-width: 350px;
+    padding: 0 2rem;
+}
+.form-input {
+    display: flex;
+    flex-direction: column;
+}
+.form-input label {
+    margin: .32rem 0;
+    font-weight: 500;
+    display: block;
+}
+
+.form-input textarea, .form-input input {
+    padding: .32rem;
+    width: 100%;
+    resize: none;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.row > .form-input {
+    flex: 1 1 100%;
+}

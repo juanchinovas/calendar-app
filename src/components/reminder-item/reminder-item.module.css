@@ -1,0 +1,42 @@
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 .8rem;
+    background-color: #ffffff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .5);
+    border-bottom: 1px solid #f0f0f0;
+    color: #444444;
+}
+
+.item:first-child {
+    flex-grow: 1;
+    flex-basis: 80%;
+}
+
+.item:first-child span {
+    margin-right: 5px;
+    font-weight: 300;
+}
+
+.item:first-child span:first-child {
+    font-weight: 500;
+}
+
+.item:first-child span:last-child,
+.item:first-child {
+    font-size: 1rem;
+}
+
+.controls {
+    display: flex;
+    width: auto;
+}
+
+.controls button {
+    margin: .2rem;
+}
+
+.controls .delete {
+    color: orange;
+}

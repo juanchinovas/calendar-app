@@ -22,6 +22,23 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+.App-footer {
+  display: flex;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  flex-direction: column;
+}
+
+.App-footer header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.App-footer header h6 {
+  margin: .5rem;
+}
+
 /*
 .App-link {
   color: #61dafb;

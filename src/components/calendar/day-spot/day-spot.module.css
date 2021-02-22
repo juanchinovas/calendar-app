@@ -1,0 +1,88 @@
+
+.calendar__month_day {
+    display: flex;
+    padding: .5rem;
+    border: .5px solid #F0F0F0;
+    background-color: #ffffff;
+    color: #221450;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    -webkit-transition: background-color 100ms ease-in-out;
+    -moz-transition: background-color 100ms ease-in-out;
+    -o-transition: background-color 100ms ease-in-out;
+    transition: background-color 100ms ease-in-out;
+}
+
+.calendar__month_day:hover {
+    background-color: rgb(203, 229, 253) !important;
+    font-weight: bold;
+    z-index: 10000;
+}
+
+.calendar__month_day:focus,
+.-selected {
+    border: 2px solid salmon;
+}
+
+.controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -100%;
+    background-color: #ffffff;
+    box-shadow: 0 -1px 4px 2px rgba(0, 0, 0, .2);
+    transition: bottom .6s ease-in-out;
+}
+
+.controls ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex: 1 1 100%;
+    justify-content: space-between;
+}
+.controls ul li {
+    padding: .2rem;
+    border-right: 1px solid #F0F0F0;
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    color: blue;
+}
+
+.calendar__month_day:hover .controls, 
+.calendar__month_day:focus .controls {
+    bottom: 0;
+}
+
+.reminders {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+
+.reminders-container {
+    display: flex;
+    flex-direction: row;
+    padding: 1.6rem;
+    width: 100%;
+}
+
+.reminders-container span {
+    width: 10px;
+    height: 10px;
+    display: block;
+    border-radius: 50%;
+    margin: .1rem;
+}
+
+.calendar__month_day_weather {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    font-style: italic;
+    font-size: .75rem;
+}
