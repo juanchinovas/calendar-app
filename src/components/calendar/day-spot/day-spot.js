@@ -4,10 +4,11 @@ import { useSelector } from "react-redux";
 import styles from "./day-spot.module.css";
 import { formatDate } from "../../../utils/utils";
 
-function DaySpot({position, displayDate, currentDate, onAddNewReminder, onSelect, selectedDate}) {
-    const isCurrentDay = (currentDate.getFullYear() === displayDate.getFullYear()
-                        && currentDate.getMonth() === displayDate.getMonth()
-                        && currentDate.getDate() === displayDate.getDate());
+function DaySpot({position, displayDate, currentCalendarDate, onAddNewReminder, onSelect, selectedDate}) {
+    const realCurrentDate = new Date();
+    const isCurrentDay = (realCurrentDate.getFullYear() === displayDate.getFullYear()
+                        && realCurrentDate.getMonth() === displayDate.getMonth()
+                        && realCurrentDate.getDate() === displayDate.getDate());
 
 
 
@@ -18,7 +19,7 @@ function DaySpot({position, displayDate, currentDate, onAddNewReminder, onSelect
 
     const classes = [
         styles.calendar__month_day,
-        currentDate.getMonth() !== displayDate.getMonth() && "-no_belong_to_current_month",
+        currentCalendarDate.getMonth() !== displayDate.getMonth() && "-no_belong_to_current_month",
         [0, 6].includes(position % 7) && "-month_weekend",
         isCurrentDay && "-current",
         selectedDate === eventsKey && styles["-selected"]

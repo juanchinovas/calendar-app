@@ -39,7 +39,7 @@ function Calendar({ onAddNewReminderEventHandler, onDaySelectedEventHandler }) {
                 {Array.from({ length: maxColumns }).map((_, i) => (
                     <DaySpot 
                         position={i} 
-                        currentDate={currentDate}
+                        currentCalendarDate={currentDate}
                         displayDate={i > 0 ? new Date(trickDate.setDate(trickDate.getDate() + 1)): new Date(trickDate.getTime())}
                         key={i}
                         onAddNewReminder={onAddNewReminderEventHandler}
