@@ -40,3 +40,18 @@
 .controls .delete {
     color: orange;
 }
+
+img {
+    max-width: 100%;
+    margin: -5px;
+}
+
+.weather_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weather_container img {
+    margin-right: 10px;
+}

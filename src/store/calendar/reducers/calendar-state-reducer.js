@@ -33,34 +33,42 @@ const initialState = {
 
 export default function calendarStateReducer(state = initialState, action) {
 
-    if (action.type === ACTIONS.PREVIOUS) {
-        const currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - 1, 1);
-        if (currentDate.getMonth() === state.currentDate.getMonth()) {
-            currentDate.setDate(state.currentDate.getDate())
-        }
-        return {
-            ...state,
-            currentDate,
-            options: utils.calculateStartDate({currentDate, maxColumns: state.maxColumns })
-        };
+    switch (action.type) {
+        case ACTIONS.PREVIOUS:
+            return getPreviousMonth(state);
+        case ACTIONS.NEXT:
+            return getNextMonth(state);
+        default:
+            return state;
     }
-
-    if (action.type === ACTIONS.NEXT) {
-        const currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1, 1);
-        if (currentDate.getMonth() === state.currentDate.getMonth()) {
-            currentDate.setDate(state.currentDate.getDate())
-        }
-        return {
-            ...state,
-            currentDate,
-            options: utils.calculateStartDate({currentDate, maxColumns: state.maxColumns })
-        };
-    }
-
-    return state;
 }
 
 export const ACTIONS = {
     PREVIOUS: "PREVIOUS",
     NEXT: "NEXT"
+}
+
+function getPreviousMonth(state) {
+    const currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - 1, 1);
+    if (currentDate.getMonth() === state.currentDate.getMonth()) {
+        currentDate.setDate(state.currentDate.getDate())
+    }
+    return {
+        ...state,
+        currentDate,
+        options: utils.calculateStartDate({currentDate, maxColumns: state.maxColumns })
+    };
+}
+
+function getNextMonth(state) {
+    const currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() + 1, 1);
+    if (currentDate.getMonth() === state.currentDate.getMonth()) {
+        currentDate.setDate(state.currentDate.getDate())
+    }
+
+    return {
+        ...state,
+        currentDate,
+        options: utils.calculateStartDate({currentDate, maxColumns: state.maxColumns })
+    };
 }

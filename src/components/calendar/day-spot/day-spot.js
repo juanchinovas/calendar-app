@@ -15,7 +15,7 @@ function DaySpot({position, displayDate, currentDate, onAddNewReminder, onSelect
     const daysOfTheWeek = useSelector((state) => state.calendar.daysOfTheWeek);
     const events = useSelector((state) => state.event.data);
     const eventsKey = formatDate(displayDate);
-    console.log(events && events[eventsKey] && events[eventsKey].weather);
+
     const classes = [
         styles.calendar__month_day,
         currentDate.getMonth() !== displayDate.getMonth() && "-no_belong_to_current_month",
@@ -37,9 +37,9 @@ function DaySpot({position, displayDate, currentDate, onAddNewReminder, onSelect
         >
             <span data-time={displayDate.getTime()}>{displayDate.getDate()}</span>
 
-            {events && events[eventsKey] && events[eventsKey].weather && (
+            {/* {events && events[eventsKey] && events[eventsKey].weather && (
                 <span className={styles.calendar__month_day_weather}>{events[eventsKey].weather}</span>
-            )}
+            )} */}
             
             {events && events[eventsKey] && events[eventsKey].reminders && (
                 <div className={styles['reminders-container']}>
@@ -52,7 +52,7 @@ function DaySpot({position, displayDate, currentDate, onAddNewReminder, onSelect
                     <li onClick={(ev)=> {
                         ev.stopPropagation();
                         if (onAddNewReminder) onAddNewReminder(eventsKey);
-                        }}>New reminder</li>
+                        }}><span style={{fontSize: "1.3rem"}}>&#43;</span> reminder</li>
                 </ul>
             </div>
         </div>

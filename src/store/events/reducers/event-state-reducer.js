@@ -6,207 +6,25 @@ const initialState = {
 };
 
 export default function eventStateReducer(state = initialState, action) {
-    // Adding
-    if (action.type === ACTIONS.ADD_NEW) {
-        let data = state.data[action.payload.eventDate];
-        let events = (data && data.reminders) || [];
 
-        const index = events.findIndex(d => d._id === action.payload._id);
-        if (index > -1) {
+    switch (action.type) {
+        case ACTIONS.ADD_NEW:
+            return addNewReminder(state, action);
+        case ACTIONS.MODIFY:
+            return editReminder(state, action);
+        case ACTIONS.DELETE:
+            return deleteReminder(state, action);
+        case ACTIONS.SET_WEATHER:
+            return setWeatherToReminder(state, action);
+        case ACTIONS.DELETE_ALL:
+            return removeAll(state, action);
+        case ACTIONS.CLEAN_ERROR:
             return {
-                data: {
-                    ...state.data
-                },
-                error: "There is a reminder at the same time"
+                data: { ...state.data }
             };
-        }
-
-        if (!action.payload.title) {
-            return {
-                data: {
-                    ...state.data
-                },
-                error: "The reminder title is required"
-            };
-        }
-
-        if (action.payload.title.length > 30) {
-            return {
-                data: {
-                    ...state.data
-                },
-                error: "The reminder title must have max of 30 characters"
-            };
-        }
-
-        if (action.payload.description.length > 100) {
-            return {
-                data: {
-                    ...state.data
-                },
-                error: "The reminder description must have max of 100 characters"
-            };
-        }
-
-        if (!action.payload.eventTime) {
-            return {
-                data: {
-                    ...state.data
-                },
-                error: "Please, specify the time of the reminder"
-            };
-        }
-
-        events.push({
-            ...action.payload
-        });
-        events.sort(eventSorter);
-
-        return {
-            data: {
-                ...state.data,
-                [action.payload.eventDate]: {
-                    ...data,
-                    reminders: events
-                }
-            }
-        };
+        default:
+            return state;
     }
-
-    // Deleting
-    if (action.type === ACTIONS.DELETE) {
-        let data = state.data[action.payload.eventDate];
-        let events = (data && data.reminders) || [];
-
-        if (events) {
-            const index = events.findIndex(d => d._id === action.payload._id);
-            if (index === -1) {
-                return {
-                    data: {
-                        ...state.data
-                    },
-                    error: "Cannot delete the reminder. Does not exists"
-                };
-            }
-            events.splice(index, 1);
-        }
-
-        return {
-            data: {
-                ...state.data,
-                [action.payload.eventDate]: {
-                    ...data,
-                    reminders: events
-                }
-            }
-        };
-    }
-
-    // Modifying
-    if (action.type === ACTIONS.MODIFY) {
-        let data = state.data[action.payload.eventDate];
-        let events = (data && data.reminders) || []
-
-        if (events) {
-            const {_editId, ...reminderInfo} = action.payload;
-            const index = events.findIndex(d => d._id === _editId);
-            if (index === -1) {
-                return {
-                    data: {
-                        ...state.data
-                    },
-                    error: "Reminder does not exists"
-                };
-            }
-
-            if (!action.payload.title) {
-                return {
-                    data: {
-                        ...state.data
-                    },
-                    error: "The reminder title is required"
-                };
-            }
-    
-            if (action.payload.title.length > 20) {
-                return {
-                    data: {
-                        ...state.data
-                    },
-                    error: "The reminder title must have max of 30 characters"
-                };
-            }
-    
-            if (action.payload.description.length > 100) {
-                return {
-                    data: {
-                        ...state.data
-                    },
-                    error: "The reminder description must have max of 100 characters"
-                };
-            }
-    
-            if (!action.payload.eventTime) {
-                return {
-                    data: {
-                        ...state.data
-                    },
-                    error: "Please, specify the time of the reminder"
-                };
-            }
-
-            events[index] = reminderInfo;
-
-            events.sort(eventSorter);
-        }
-
-        return {
-            data: {
-                ...state.data,
-                [action.payload.eventDate]: {
-                    ...data,
-                    reminders: events
-                }
-            }
-        };
-    }
-
-    // Deleting all of the day
-    if (action.type === ACTIONS.DELETE_ALL) {
-        let data = {};
-        if (action.payload) {
-            data = {...state.data};
-            delete data[action.payload];
-        }
-        return {
-            data,
-            error: ""
-        };
-    }
-
-    // Cleaning error Message
-    if (action.type === ACTIONS.CLEAN_ERROR) {
-        return {
-            data: { ...state.data }
-        };
-    }
-
-    // Set Weather
-    if (action.type === ACTIONS.SET_WEATHER) {
-        let data = state.data[action.payload.eventDate];
-        let currentWeather = data.weather || {};
-        return {
-            data: {
-                ...state.data,
-                [action.payload.eventDate]: {
-                    ...data,
-                    weather: {...currentWeather, ...action.payload}
-                }
-            }
-        };
-    }
-
-    return state;
 }
 
 export const ACTIONS = {
@@ -217,3 +35,162 @@ export const ACTIONS = {
     CLEAN_ERROR: "CLEAN_ERROR",
     SET_WEATHER: "SET_WEATHER"
 };
+
+
+function addNewReminder(state, action) {
+    let data = state.data[action.payload.eventDate];
+    let events = (data && data.reminders) || [];
+
+    const index = events.findIndex(d => d._id === action.payload._id);
+    if (index > -1) {
+        return {
+            error: "There is a reminder at the same time"
+        };
+    }
+
+    const validationResult = _addAndEditCommonValidations(action.payload);
+    if (validationResult) {
+        return {
+            data: {
+                ...state.data
+            },
+            ...validationResult
+        }
+    }
+
+    events.push({
+        ...action.payload
+    });
+    events.sort(eventSorter);
+
+    return {
+        data: {
+            ...state.data,
+            [action.payload.eventDate]: {
+                ...data,
+                reminders: events
+            }
+        }
+    };
+}
+
+function deleteReminder(state, action) {
+    let data = state.data[action.payload.eventDate];
+    let events = (data && data.reminders) || [];
+
+    if (events) {
+        const index = events.findIndex(d => d._id === action.payload._id);
+        if (index === -1) {
+            return {
+                data: {
+                    ...state.data
+                },
+                error: "Cannot delete the reminder. Does not exists"
+            };
+        }
+        events.splice(index, 1);
+    }
+
+    return {
+        data: {
+            ...state.data,
+            [action.payload.eventDate]: {
+                ...data,
+                reminders: events
+            }
+        }
+    };
+}
+
+function editReminder(state, action) {
+    let data = state.data[action.payload.eventDate];
+    let events = (data && data.reminders) || []
+
+    if (events) {
+        const {_editId, ...reminderInfo} = action.payload;
+        const index = events.findIndex(d => d._id === _editId);
+        if (index === -1) {
+            return {
+                error: "Reminder does not exists"
+            };
+        }
+
+        const validationResult = _addAndEditCommonValidations(action.payload);
+        if (validationResult) {
+            return {
+                data: {
+                    ...state.data
+                },
+                ...validationResult
+            }
+        }
+
+        events[index] = reminderInfo;
+
+        events.sort(eventSorter);
+    }
+
+    return {
+        data: {
+            ...state.data,
+            [action.payload.eventDate]: {
+                ...data,
+                reminders: events
+            }
+        }
+    };
+}
+
+function setWeatherToReminder(state, action) {
+    let data = state.data[action.payload.eventDate] || {};
+    let currentWeather = data.weather || {};
+
+    return {
+        data: {
+            ...state.data,
+            [action.payload.eventDate]: {
+                ...data,
+                weather: {...currentWeather, ...action.payload.info}
+            }
+        }
+    };
+}
+
+function removeAll(state, action) {
+    let data = {};
+    if (action.payload) {
+        data = {...state.data};
+        delete data[action.payload];
+    }
+    return {
+        data,
+        error: ""
+    };
+}
+
+function _addAndEditCommonValidations(reminder) {
+
+    if (!reminder.title || reminder.title.trim() === "") {
+        return {
+            error: "The reminder title is required"
+        };
+    }
+
+    if (reminder.title.length > 30) {
+        return {
+            error: "The reminder title must have max of 30 characters"
+        };
+    }
+
+    if (reminder.description && reminder.description.length > 100) {
+        return {
+            error: "The reminder description must have max of 100 characters"
+        };
+    }
+
+    if (!reminder.eventTime || reminder.eventTime.trim() === "") {
+        return {
+            error: "The event time is required"
+        };
+    }
+}
