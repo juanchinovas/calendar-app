@@ -19,3 +19,17 @@ entered day and time. Also, include a city.
 - Expand the calendar to support more than the current month.
 - Properly handle overflow when multiple reminders appear on the same date.
 - Functionality to delete one or ALL the reminders for a specific day
+
+# Instructions to setup.
+
+- > In the console run 
+    ```npm 
+    npm i  
+    ```
+    ```npm 
+    npm start 
+    ```
+- >Testing
+    ```npm 
+    npm test 
+    ```
